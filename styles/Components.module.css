@@ -1,0 +1,29 @@
+.dropdownSelect {
+  padding: 10px;
+  border-radius: 5px;
+  margin: 5px;
+}
+
+.checkbox {
+  margin: 20px;
+}
+
+.upload {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border: 1px blue dotted;
+  border-radius: 10px;
+  margin-left: 10%;
+  padding: 2%;
+}
+
+.label {
+  display: inline-block;
+  margin: 1%;
+  font-weight: bold;
+}
+
+.input {
+  margin-left: 1%;
+}

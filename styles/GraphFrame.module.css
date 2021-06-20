@@ -1,0 +1,48 @@
+.graphFrame {
+  border: 2px solid black;
+  border-radius: 10px;
+  margin: 0 1%;
+  padding: 1%;
+  width: 30%;
+  min-height: calc(33vw);
+}
+
+.frameHeader {
+  display: flex;
+}
+
+.deleteGraph {
+  /* background-color: rgb(235, 66, 66); */
+  text-align: center;
+  flex-basis: 5%;
+}
+
+.wrapper {
+  width: 100%;
+  height: calc(27vw);
+}
+
+.title {
+  margin: 1% 0 0 0;
+  text-align: center;
+  height: 10%;
+  font-size: 1.5rem;
+  flex-basis: 95%;
+}
+
+.descriptionDiv {
+  height: 10%;
+  overflow: scroll;
+  background-color: white;
+  margin: 2% 1% 1%;
+}
+
+.description {
+  font-size: 1rem;
+  font: arial;
+  margin: 1%;
+}
+
+.highlight {
+  border: 5px solid rgb(255, 194, 81);
+}

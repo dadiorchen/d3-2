@@ -1,0 +1,57 @@
+.toolbarContainer {
+  background-color: #ececec;
+  height: 20%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+}
+
+.labelDiv {
+  margin-top: 20px;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.rightAlign {
+  align-items: flex-end;
+}
+
+.pair {
+  display: flex;
+}
+
+.plusSign {
+  font-size: 3em;
+  margin: 5% 0 0 0;
+}
+
+.addNew {
+  margin-top: 0;
+}
+
+.buffer {
+  margin: 0 2%;
+}
+
+.smallBuffer {
+  margin: 0 1%;
+}
+
+.upload {
+  margin-left: 10%;
+}
+
+.label {
+  display: inline-block;
+  margin-left: 10%;
+}
+
+.input {
+  display: inline-block;
+}
