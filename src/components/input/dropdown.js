@@ -4,6 +4,7 @@ import styles from '../../../styles/Components.module.css';
 
 const Dropdown = ({
   options,
+  type,
   labelText,
   changeHandler,
   defaultValue: selectedValue,
@@ -60,7 +61,7 @@ const Dropdown = ({
         {labelText}
         <select
           onChange={(ev) => changeHandler(ev.target.value)}
-          defaultValue={selectedValue}
+          value={type} 
           className={styles.dropdownSelect}
         >
           {options.length && specialObject

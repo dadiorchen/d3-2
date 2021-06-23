@@ -238,12 +238,6 @@ export const selectedGraphReducer = createReducer(initialState.selectedGraph, (b
     .addCase(SET_SELECTED_GRAPH, (state, action) => (state = action.payload))
     .addDefaultCase((state) => state);
 });
-export const selectedTypeReducer = createReducer(initialState.getCurrentGraphType, (builder) => {
-  builder
-    .addCase(SET_GRAPH_TYPE, (state, action) => (state = action.payload))
-    .addDefaultCase((state) => state);
-});
-
 
 export const highestIdReducer = createReducer(initialState.highestId, (builder) => {
   builder
