@@ -23,6 +23,12 @@ import {
   SET_SELECTED_GRAPH,
   ADD_DATA_PLOT,
   SET_POINT_SHAPE,
+  SET_THRESHOLD,
+  UNSET_THRESHOLD,
+  SET_IF_DONUT,
+  UNSET_IF_DONUT,
+  SET_PAD_ANGLE,
+  UNSET_PAD_ANGLE,
 } from '../types';
 
 export const setGrid = createAction(SET_GRID);
@@ -60,3 +66,12 @@ export const addDataPlot = createAction(ADD_DATA_PLOT);
 export const setPointShape = createAction(SET_POINT_SHAPE);
 
 export const setSelectedGraph = createAction(SET_SELECTED_GRAPH);
+
+export const setThreshold = createAction(SET_THRESHOLD);
+export const unsetThreshold = createAction(UNSET_THRESHOLD);
+
+export const setIfDonut = createAction(SET_IF_DONUT);
+export const unsetIfDonut = createAction(UNSET_IF_DONUT);
+
+export const setPadAngle = createAction(SET_PAD_ANGLE);
+export const unsetPadAngle = createAction(UNSET_PAD_ANGLE);

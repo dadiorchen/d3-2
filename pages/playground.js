@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import styles from '../styles/Home.module.css';
+import Head from 'next/head';
 
 import { getCurrentConfig, getAllIdAndType } from '../src/redux/reducer/graph-reducer';
 import Toolbar from '../src/components/toolbar';
@@ -11,6 +12,8 @@ import PointChart from '../src/components/point-chart';
 import LineChart from '../src/components/line-chart';
 import { setSelectedGraph } from '../src/redux/actions/toolbar-action';
 import { deleteGraph } from '../src/redux/actions/bar-action';
+
+import PieChart from '../src/components/pie-chart';
 
 const Playground = (props) => {
   const { allIdAndType, setSelectedGraph, deleteGraph } = props;
@@ -28,6 +31,10 @@ const Playground = (props) => {
         return <PointChart key={id} id={id} />;
       }
 
+      case 'pie': {
+        return <PieChart key={id} id={id} />;
+      }
+
       default: {
         return <BarChart key={id} id={id} />;
       }
@@ -42,6 +49,7 @@ const Playground = (props) => {
         <GraphFrame
           key={`frame-${el.id}`}
           id={el.id}
+          type={el.type}
           setSelectedGraph={setSelectedGraph}
           handleDelete={deleteGraph}
           selected={selected}
@@ -55,6 +63,28 @@ const Playground = (props) => {
   return (
     <>
       <div className="playground-container">
+        <Head>
+          <script src="https://html2canvas.hertzen.com/dist/html2canvas.js"></script>
+
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `function generatePNGAndDownload(container, beforeHook, afterHook){
+                beforeHook && beforeHook();
+                html2canvas(container)
+                .then(function(canvas){
+                  var dataURL = canvas.toDataURL();
+                  const div = document.createElement("div");
+                  document.body.appendChild(div);
+                  div.innerHTML = '<a id="a1" href="' + dataURL + '" download="down.png" style="display:none" >download</a>';
+                  document.getElementById("a1").click();
+                  afterHook && afterHook();
+                  document.body.removeChild(div);
+                });
+              }
+                      `,
+            }}
+          ></script>
+        </Head>
         <Toolbar />
         <div className="graph-playground">{renderGraphs(allIdAndType)}</div>
       </div>

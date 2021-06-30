@@ -2,13 +2,14 @@
   border: 2px solid black;
   border-radius: 10px;
   margin: 0 1%;
-  padding: 1%;
+  padding: 1% 1% 0 1%;
   width: 30%;
   min-height: calc(33vw);
 }
 
 .frameHeader {
   display: flex;
+  justify-content: flex-end;
 }
 
 .deleteGraph {
@@ -27,14 +28,14 @@
   text-align: center;
   height: 10%;
   font-size: 1.5rem;
-  flex-basis: 95%;
+  flex-basis: 90%;
 }
 
 .descriptionDiv {
   height: 10%;
   overflow: scroll;
   background-color: white;
-  margin: 2% 1% 1%;
+  margin: 0 1% 1%;
 }
 
 .description {

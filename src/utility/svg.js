@@ -8,6 +8,7 @@ import Rect from '../components/rect';
 import Circle from '../components/circle';
 import Grid from '../components/grid';
 import Line from '../components/line';
+import Threshold from '../components/threshold';
 
 export const createSvg = (selector, height = SVG.HEIGHT, width = SVG.WIDTH) => {
   return d3.select(selector).append('svg').attr('width', width).attr('height', height);
@@ -108,8 +109,15 @@ export const addGridToChart = (
 ) => {
   let xData;
   const { xVals } = organizeDataPlots(dataPlots);
-  if (type === 'band') xData = findDomainAndFormat(type, data, xVals).domain;
-  else if (x.ticks) {
+  if (type === 'band') {
+    xData = findDomainAndFormat(type, data, xVals).domain;
+    if (xData.length > 20) {
+      const length = xData.length;
+      xData = xData.filter((el, i) => {
+        return !(i % Math.floor(length / 20));
+      });
+    }
+  } else if (x.ticks) {
     xData = x.ticks();
   } else xData = [];
 
@@ -145,11 +153,12 @@ export const addGridToChart = (
     );
 };
 
-export const createToolTip = () => {
+export const createToolTip = (id) => {
   return d3
     .select('body')
     .append('div')
     .attr('class', 'hideTooltip')
+    .attr('id', `tooltip-${id}`)
     .style('position', 'absolute')
     .style('background-color', 'lightgray')
     .style('border', '2px solid gray')
@@ -297,15 +306,33 @@ export const drawXAxis = (
   margin = SVG.MARGIN,
   height = SVG.HEIGHT
 ) => {
-  const xAxis = parent
-    .call(d3.axisBottom(x).tickFormat(formatter))
-    .attr('transform', `translate(0, ${height + margin.top + 10})`);
+  let xAxis;
+
+  if (config.xFormat == 'band') {
+    xAxis = parent
+      .call(
+        d3.axisBottom(x).tickValues(
+          x.domain().filter(function (_, i) {
+            if (x.domain().length > 20) {
+              return !(i % Math.floor(x.domain().length / 20));
+            } else return true;
+          })
+        )
+      )
+      .attr('transform', `translate(0, ${height + margin.top + 10})`);
+  } else {
+    xAxis = parent
+      .call(d3.axisBottom(x).tickFormat(formatter))
+      .attr('transform', `translate(0, ${height + margin.top + 10})`);
+  }
 
   const xAxisTicks = xAxis
     .selectAll('text')
     .style('text-anchor', 'end')
     .style('font-size', '1.5em')
     .style('fill', '#69a3b2');
+
+  if (xAxisTicks.size() > 19) xAxisTicks.remove();
 
   if (config.horizontal && config.type == 'bar') {
     xAxisTicks.attr('transform', 'translate(-15, 10)rotate(-90)').style('font-size', '2em');
@@ -370,18 +397,23 @@ export const findDomainAndFormat = (type, data, keys) => {
       return findTimeDomain(data, keys);
 
     case 'percent':
-      return { domain: [0, 1], formatter: d3.format('.0%') };
+      return { domain: [0, 1] };
 
     case 'linear':
       return { domain: findLinearDomainWithBuffer(data, keys) };
 
-    case 'band':
+    case 'band': {
       return {
-        domain: data.reduce((acc, curr) => {
-          keys.forEach((key) => acc.push(curr[key]));
-          return acc;
-        }, []),
+        domain: [
+          ...new Set(
+            data.reduce((acc, curr) => {
+              keys.forEach((key) => acc.push(curr[key]));
+              return acc;
+            }, [])
+          ),
+        ],
       };
+    }
 
     case 'point':
       return {
@@ -448,10 +480,11 @@ export const addAxisLabelToChart = (
   }
 };
 
-export const attachToolTip = (parent, tooltip, config) => {
+export const attachToolTip = (parent, tooltip, xVal, yVal, ifPie) => {
   parent
     .on('mouseover', function (ev, d) {
-      const text = `${d.automation_rate} & ${d.date}`;
+      let text = `${xVal}: ${d[xVal]} ${yVal ? `& ${yVal}: ${d[yVal]}` : null}`;
+      if (ifPie) text = `${xVal}: ${d.data[xVal]}`;
 
       tooltip.transition().duration(200).style('opacity', 0.7);
       tooltip
@@ -587,7 +620,7 @@ export const findRectX = (
 export const findRectY = (d, yVal, yFormat, y_scale, margin = SVG.MARGIN, height = SVG.HEIGHT) => {
   switch (yFormat) {
     case 'percent':
-      return height + margin.top + y_scale(d[yVal]) / 100;
+      return y_scale(d[yVal]);
 
     case 'linear':
       return height + margin.top - y_scale(d[yVal]);
@@ -600,7 +633,7 @@ export const findRectY = (d, yVal, yFormat, y_scale, margin = SVG.MARGIN, height
 export const findRectHeight = (d, yVal, yFormat, y_scale) => {
   switch (yFormat) {
     case 'percent':
-      return y_scale(d[yVal]) / -100;
+      return y_scale(1 - d[yVal]) - SVG.MARGIN.top;
 
     case 'linear':
       return y_scale(d[yVal]);
@@ -672,8 +705,8 @@ export const renderRect = (parent, data, x_scale, y_scale, config, xVal, yVal) =
     rect.attr('rx', 20).attr('ry', 20);
   }
 
-  const tooltip = createToolTip(d3.select('body'));
-  attachToolTip(rect, tooltip);
+  const tooltip = createToolTip(config.id);
+  attachToolTip(rect, tooltip, xVal, yVal);
 };
 
 const applyCurve = (curveStr) => {
@@ -722,6 +755,8 @@ export const createColorSchemeFill = (color, data, config) => {
     colorFunc = d3.interpolateBlues;
   } else throw new Error('invalid color scheme');
 
+  if (config.type == 'pie') return colorFunc;
+
   const { yVals } = organizeDataPlots(config.dataPlots);
   const { domain } = findDomainAndFormat('linear', data, yVals);
 
@@ -736,6 +771,14 @@ export const renderPointChart = (x_scale, y_scale, id, grid, data, config) => {
   chart.push(...renderAxes(x_scale, y_scale, id, data, config));
 
   if (grid) chart.push(renderGrid(x_scale, id, data, config));
+
+  if (config.threshold) {
+    if (data[0].PROBA) {
+      [...data].sort((a, b) => a.PROBA - b.PROBA);
+    }
+
+    chart.push(renderThreshold(x_scale, y_scale, id, data));
+  }
 
   chart.push(
     config.dataPlots.map((dataPlot, i, arr) => {
@@ -775,7 +818,7 @@ export const findCircleX = (
 
     case 'band': {
       const { domain } = findDomainAndFormat('band', data, [xVal]);
-      return x_scale(d[xVal]) - 10 + width / (domain.length * 2);
+      return x_scale(d[xVal]) + width / (domain.length * 2);
     }
 
     case 'percent':
@@ -799,7 +842,7 @@ export const findCircleY = (
 ) => {
   switch (yFormat) {
     case 'percent':
-      return height + margin.top + y_scale(d[yVal]) / 100;
+      return y_scale(d[yVal]);
 
     case 'linear':
       return height + margin.top - y_scale(d[yVal]);
@@ -861,14 +904,17 @@ export const renderCircle = (
       });
   }
 
-  point
-    .attr('fill', (d) => (ifOwnColor ? color : colorSchemeFill(d[yVal])))
-    .style('cursor', 'pointer')
-    .attr('stroke', COLORS.GREY)
-    .attr('stroke-width', '1px');
+  if (data[0].PROBA) point.attr('fill', (d) => (d.LABEL == 0 ? '#6d9ac3' : '#accc7b'));
+  else {
+    point
+      .attr('fill', (d) => (ifOwnColor ? color : colorSchemeFill(d[yVal])))
+      .style('cursor', 'pointer')
+      .attr('stroke', COLORS.GREY)
+      .attr('stroke-width', '1px');
+  }
 
-  const tooltip = createToolTip(d3.select('body'));
-  attachToolTip(point, tooltip);
+  const tooltip = createToolTip(config.id);
+  attachToolTip(point, tooltip, xVal, yVal);
 };
 
 export const symbolParser = (shape) => {
@@ -888,4 +934,168 @@ export const symbolParser = (shape) => {
     default:
       return d3.symbolTriangle;
   }
+};
+
+export const renderThreshold = (x_scale, y_scale, id, data) => {
+  return (
+    <Threshold key={`threshold-${id}`} data={data} graphID={id} id={id} x={x_scale} y={y_scale} />
+  );
+};
+
+export const drawThresholdLine = (parent, data, x, y, id) => {
+  const trueHitsPos = data
+    .filter((el) => el.LABEL == 0)
+    .map((el) => {
+      return { x: x(el.PROBA) };
+    });
+
+  const falseHitsPos = data
+    .filter((el) => el.LABEL == 1)
+    .map((el) => {
+      return { x: x(el.PROBA) };
+    });
+
+  const line = parent
+    .append('line')
+    .attr('class', 'movable')
+    .attr('x1', SVG.MARGIN.left)
+    .attr('y1', SVG.MARGIN.top - 5)
+    .attr('x2', SVG.MARGIN.left)
+    .attr('y2', SVG.MARGIN.top + SVG.HEIGHT + 10)
+    .attr('stroke-width', 7)
+    .attr('stroke', 'black')
+    .call(
+      d3
+        .drag()
+        .on('drag', function (event) {
+          d3.select(this).attr('x1', event.x).attr('x2', event.x);
+        })
+        .on('end', function (event) {
+          if (event.x > SVG.WIDTH - 5) {
+            d3.select(this)
+              .attr('x1', SVG.WIDTH - 5)
+              .attr('x2', SVG.WIDTH - 5);
+            document.querySelector(`#trueAboveLowThreshold-${id}`).innerText = '0.00';
+            document.querySelector(`#falseBelowLowThreshold-${id}`).innerText = '100.00';
+          } else if (event.x < SVG.MARGIN.left) {
+            d3.select(this).attr('x1', SVG.MARGIN.left).attr('x2', SVG.MARGIN.left);
+            document.querySelector(`#trueAboveLowThreshold-${id}`).innerText = '100.00';
+            document.querySelector(`#falseBelowLowThreshold-${id}`).innerText = '0.00';
+          } else calculateThresholdStats(trueHitsPos, falseHitsPos, event, false, id);
+        })
+    );
+
+  const secondLine = parent
+    .append('line')
+    .attr('class', 'movable')
+    .attr('x1', SVG.WIDTH - 10)
+    .attr('y1', SVG.MARGIN.top - 5)
+    .attr('x2', SVG.WIDTH - 10)
+    .attr('y2', SVG.MARGIN.top + SVG.HEIGHT + 10)
+    .attr('stroke-width', 7)
+    .attr('stroke', 'black')
+    .call(
+      d3
+        .drag()
+        .on('drag', function (event) {
+          d3.select(this).attr('x1', event.x).attr('x2', event.x);
+        })
+        .on('end', function (event) {
+          if (event.x > SVG.WIDTH - 5) {
+            d3.select(this)
+              .attr('x1', SVG.WIDTH - 5)
+              .attr('x2', SVG.WIDTH - 5);
+            document.querySelector(`#trueAboveHighThreshold-${id}`).innerText = '0.00';
+            document.querySelector(`#falseBelowHighThreshold-${id}`).innerText = '100.00';
+          } else if (event.x < SVG.MARGIN.left) {
+            d3.select(this).attr('x1', SVG.MARGIN.left).attr('x2', SVG.MARGIN.left);
+            document.querySelector(`#trueAboveHighThreshold-${id}`).innerText = '100.00';
+            document.querySelector(`#falseBelowHighThreshold-${id}`).innerText = '0.00';
+          } else calculateThresholdStats(trueHitsPos, falseHitsPos, event, true, id);
+        })
+    );
+
+  document.querySelector(`#narrative-${id}`).innerHTML = `
+  Your high threshold requires no checks on the <span id='trueAboveHighThreshold-${id}'>0.00</span>% most likely true hits (blue) 
+  and is accurately finding or checking <span id='falseBelowHighThreshold-${id}'>100.00</span>% of the false positives (green) <br/>
+  Your low threshold requires no checks on the <span id='falseBelowLowThreshold-${id}'>0.00</span>% most likely false positives (green)
+  and is accurately finding or checking <span id='trueAboveLowThreshold-${id}'>100.00</span>% of the true hits (blue)`;
+};
+
+export const filterHits = (data, key, filterVal) => {
+  return data.filter((row) => row[key] == filterVal);
+};
+
+export const calculateThresholdStats = (trueHitsPos, falseHitsPos, event, ifHighThreshold, id) => {
+  const selector = ifHighThreshold ? 'HighThreshold' : 'LowThreshold';
+
+  const trueHitsNum = trueHitsPos.length;
+  let trueHitsAbove = 0;
+
+  for (let i = trueHitsPos.length - 1; i >= 0; i--) {
+    const curr = trueHitsPos[i];
+    if (curr.x > event.x) trueHitsAbove++;
+    else break;
+  }
+
+  document.querySelector(`#trueAbove${selector}-${id}`).innerText = (
+    (trueHitsAbove * 100) /
+    trueHitsNum
+  ).toFixed(2);
+
+  const falseHitsNum = falseHitsPos.length;
+  let falseHitsAbove = 0;
+
+  for (let i = 0; i < falseHitsPos.length; i++) {
+    const curr = falseHitsPos[i];
+    if (curr.x < event.x) falseHitsAbove++;
+    else break;
+  }
+
+  document.querySelector(`#falseBelow${selector}-${id}`).innerText = (
+    (falseHitsAbove * 100) /
+    falseHitsNum
+  ).toFixed(2);
+};
+
+export const renderPieChart = (id, data, config, dataProp, ifDonut, padAngle) => {
+  const g = d3
+    .select(`#pieChart-${id}`)
+    .append('g')
+    .attr('transform', `translate(${SVG.WIDTH / 2},${SVG.MARGIN.top + SVG.HEIGHT / 2})`);
+
+  const pie = d3
+    .pie()
+    .padAngle(config.padAngle ? 0.05 : 0)
+    .value(function (d) {
+      return d[dataProp];
+    });
+  const data_ready = pie(data);
+
+  const colorScale = d3
+    .scaleSequential()
+    .domain(d3.extent(data.map((el) => +el[dataProp])))
+    .interpolator(createColorSchemeFill(config.colorScheme, data, config));
+
+  const pieChart = g
+    .selectAll('path')
+    .data(data_ready)
+    .enter()
+    .append('path')
+    .attr(
+      'd',
+      d3
+        .arc()
+        .innerRadius(config.ifDonut ? 100 : 0)
+        .outerRadius((SVG.HEIGHT * 0.8) / 2)
+    )
+    .attr('fill', function (d) {
+      return colorScale(+d.data[dataProp]);
+    })
+    .attr('stroke', 'black')
+    .style('stroke-width', '2px')
+    .style('opacity', 0.7);
+
+  const tooltip = createToolTip(id);
+  attachToolTip(pieChart, tooltip, dataProp, undefined, true);
 };

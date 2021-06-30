@@ -8,7 +8,8 @@ const Axis = ({ scale: { scale, formatter }, ifX, id, data, config }) => {
   useEffect(() => {
     if (scale) {
       if (ifX) {
-        drawXAxis(d3.select(`g#axis-${id}`), scale, formatter, config);
+        const { x } = createScalesAndFormats(config, data, true);
+        drawXAxis(d3.select(`g#axis-${id}`), x.scale, formatter, config);
         return () => {
           d3.select(`g#axis-${id}-${ifX}`).selectAll('*').remove();
         };

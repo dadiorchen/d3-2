@@ -38,3 +38,12 @@ export const DELETE_GRAPH = 'DELETE_GRAPH';
 
 export const ADD_DATA_PLOT = 'ADD_DATA_PLOT';
 export const SET_POINT_SHAPE = 'SET_POINT_SHAPE';
+
+export const SET_THRESHOLD = 'SET_THRESHOLD';
+export const UNSET_THRESHOLD = 'UNSET_THRESHOLD';
+
+export const SET_IF_DONUT = 'SET_IF_DONUT';
+export const UNSET_IF_DONUT = 'UNSET_IF_DONUT';
+
+export const SET_PAD_ANGLE = 'SET_PAD_ANGLE';
+export const UNSET_PAD_ANGLE = 'UNSET_PAD_ANGLE';

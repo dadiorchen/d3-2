@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
+import * as d3 from 'd3';
 
 import { SVG } from '../utility/constants';
-import { renderPointChart, createScalesAndFormats } from '../utility/svg';
+import { renderPointChart, createScalesAndFormats, drawThresholdLine } from '../utility/svg';
 import { getGraphConfig, getGraphData } from '../redux/reducer/graph-reducer';
 
 const PointChart = ({ id, config, data }) => {
@@ -17,6 +18,10 @@ const PointChart = ({ id, config, data }) => {
 
     setXScale(x);
     setYScale(y);
+
+    return () => {
+      d3.select(`#pointChart-${id}`).selectAll('.movable').remove();
+    };
   }, [data, xFormat, yFormat, dataPlots, id]);
 
   return (

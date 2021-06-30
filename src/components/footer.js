@@ -6,7 +6,12 @@ const Footer = () => {
   return (
     <div>
       <footer className={styles.footer}>
-
+        <a href="#" target="_blank" rel="noopener noreferrer">
+          Powered by{' '}
+          <span className={styles.logo}>
+         
+          </span>
+        </a>
       </footer>
     </div>
   );

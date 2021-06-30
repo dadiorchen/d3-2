@@ -25,6 +25,12 @@ import {
   ADD_DATA_PLOT,
   SET_POINT_SHAPE,
   DELETE_GRAPH,
+  SET_THRESHOLD,
+  UNSET_THRESHOLD,
+  SET_IF_DONUT,
+  UNSET_IF_DONUT,
+  SET_PAD_ANGLE,
+  UNSET_PAD_ANGLE,
 } from '../types';
 
 import { data } from '../../../public/resource/static-data';
@@ -33,6 +39,7 @@ const initialState = {
   allGraphs: {
     1: {
       id: 1,
+      fileName: 'mock data',
       data: data,
     },
   },
@@ -56,6 +63,8 @@ const initialState = {
       curveType: 'curve linear',
       horizontal: false,
       backfill: false,
+      padAngle: 0,
+      ifDonut: false,
       legend: true, // {}?
       dataPlots: [
         {
@@ -67,6 +76,7 @@ const initialState = {
       ],
       xVal: 'date',
       yVal: 'automation_rate',
+      threshold: false,
     },
   },
   selectedGraph: 1,
@@ -201,6 +211,8 @@ export const configsReducer = createReducer(initialState.configs, (builder) => {
           curveType: 'curve linear',
           horizontal: false,
           backfill: false,
+          padAngle: 0,
+          ifDonut: false,
           legend: true,
           dataPlots: [
             {
@@ -230,6 +242,36 @@ export const configsReducer = createReducer(initialState.configs, (builder) => {
       });
       return state;
     })
+    .addCase(SET_THRESHOLD, (state, action) => {
+      const { id } = action.payload;
+      state[id].threshold = true;
+      return state;
+    })
+    .addCase(UNSET_THRESHOLD, (state, action) => {
+      const { id } = action.payload;
+      state[id].threshold = false;
+      return state;
+    })
+    .addCase(SET_IF_DONUT, (state, action) => {
+      const { id } = action.payload;
+      state[id].ifDonut = true;
+      return state;
+    })
+    .addCase(UNSET_IF_DONUT, (state, action) => {
+      const { id } = action.payload;
+      state[id].ifDonut = false;
+      return state;
+    })
+    .addCase(SET_PAD_ANGLE, (state, action) => {
+      const { id } = action.payload;
+      state[id].padAngle = true;
+      return state;
+    })
+    .addCase(UNSET_PAD_ANGLE, (state, action) => {
+      const { id } = action.payload;
+      state[id].padAngle = false;
+      return state;
+    })
     .addDefaultCase((state) => state);
 });
 
@@ -249,17 +291,30 @@ export const highestIdReducer = createReducer(initialState.highestId, (builder) 
 });
 
 export const allGraphsReducer = createReducer(initialState.allGraphs, (builder) => {
-  builder.addCase(SET_DATA, (state, action) => {
-    const { id } = action.payload;
-    const newData = action.payload.data || data;
-    return {
-      ...state,
-      [id]: {
-        id,
-        data: newData,
-      },
-    };
-  });
+  builder
+    .addCase(SET_DATA, (state, action) => {
+      const { id, flipTrueHits } = action.payload;
+      let newData;
+
+      if (action.payload.data && action.payload.data[0].PROBA) {
+        newData = action.payload.data.sort((a, b) => b.PROBA - a.PROBA);
+        if (flipTrueHits)
+          newData.forEach((el) => {
+            if (el.LABEL == 0) el.PROBA = 1 - el.PROBA;
+            el.PROBA = el.PROBA;
+          });
+      }
+      if (!newData) newData = data;
+      return {
+        ...state,
+        [id]: {
+          id,
+          fileName: '',
+          data: newData,
+        },
+      };
+    })
+    .addDefaultCase((state) => state);
 });
 
 export const graphReducer = combineReducers({

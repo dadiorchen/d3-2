@@ -10,11 +10,18 @@ export const SCALE = {
   Y: 'Y',
 };
 
+export const GRAPH_TYPE = {
+  BAR: 'bar',
+  LINE: 'line',
+  POINT: 'point',
+  PIE: 'pie',
+};
+
 export const AVAILABLE_Y_FORMATS = ['percent', 'linear', 'time', 'band'];
 export const AVAILABLE_Y_FORMATS_BAR = ['percent', 'linear'];
 export const AVAILABLE_X_FORMATS = ['time', 'band', 'percent', 'linear'];
 export const AVAILABLE_X_FORMATS_BAR = ['time', 'band'];
-export const AVAILABLE_GRAPHS = ['bar', 'line', 'point'];
+export const AVAILABLE_GRAPHS = ['bar', 'line', 'point', 'pie'];
 export const CURVE_TYPES = [
   'curve linear',
   'curve monotone x',
@@ -23,6 +30,9 @@ export const CURVE_TYPES = [
   'curve natural',
   'curve step',
 ];
+export const LINE_COLORS = ['blue', 'green'];
+export const BAR_POINT_COLORS = ['blue', 'green', 'rainbow'];
+export const POINT_COLOR_OPTIONS = ['blue', 'green', 'red', 'black'];
 
 export const SVG = {
   HEIGHT: 600,

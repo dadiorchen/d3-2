@@ -7,12 +7,13 @@ export default function Home() {
   return (
     <div className={styles.container}>
       <Head>
-        <title>Automation Cloud</title>
+        <title>WF Automation Cloud</title>
         <meta name="description" content="automation cloud dashboard" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={styles.main}>
         <h1 className={styles.title}>
+         
         </h1>
 
         <div className={styles.grid}>
@@ -23,6 +24,7 @@ export default function Home() {
 
           <a href="/example-dashboard" className={styles.card}>
             <h2>Example Dashboard &rarr;</h2>
+           
           </a>
 
           <a href="/playground" className={styles.card}>

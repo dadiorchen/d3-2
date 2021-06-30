@@ -80,7 +80,7 @@ const PointChart = ({ parent, data, r, grid, margin, currentPointIndex, setCurre
         return x_scale(new Date(d.date)) + margin.left + 75;
       },
       function (d) {
-        return y_scale(d.automation_rate / 100) + margin.top;
+        return y_scale(d.automation_rate) + margin.top;
       },
       r,
       function (d) {
@@ -170,7 +170,7 @@ const PointChart = ({ parent, data, r, grid, margin, currentPointIndex, setCurre
         //     return i / data.length * 500;  // Dynamic delay (i.e. each item delays a little longer)
         // })
         .attr('cy', function (d) {
-          return yScale(d.error_rate / 100) + margin.top;
+          return yScale(d.error_rate) + margin.top;
         })
         .on('end', function () {
           d3.select(this)
@@ -208,7 +208,7 @@ const PointChart = ({ parent, data, r, grid, margin, currentPointIndex, setCurre
         //     return i / data.length * 500;  // Dynamic delay (i.e. each item delays a little longer)
         // })
         .attr('cy', function (d) {
-          return yScale(d.automation_rate / 100) + margin.top;
+          return yScale(d.automation_rate) + margin.top;
         })
         .on('end', function () {
           d3.select(this)
@@ -301,7 +301,7 @@ function createOldLineDAttribute(x, y, margin, xAttr, yAttr) {
   return d3
     .line()
     .x((d) => x(new Date(d[xAttr])) + margin.left + 75)
-    .y((d) => y(d[yAttr] / 100) + margin.top)
+    .y((d) => y(d[yAttr]) + margin.top)
     .curve(d3.curveStepAfter);
 }
 

@@ -1,50 +1,53 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { connect } from 'react-redux';
 
 import styles from '../../../styles/Components.module.css';
+import { getCurrentConfig } from '../../redux/reducer/graph-reducer';
 
 const Dropdown = ({
   options,
-  type,
   labelText,
   changeHandler,
-  defaultValue: selectedValue,
-  getAllKeys = true,
+  defaultValue,
+  config,
   specialObject = false,
 }) => {
+  const [select, setSelect] = React.useState(null);
+
+  useEffect(() => {
+    const refreshedSelect = (
+      <select
+        onChange={(ev) => changeHandler(ev.target.value)}
+        value={defaultValue}
+        className={styles.dropdownSelect}
+      >
+        {options.length && specialObject
+          ? buildDropdown(options)
+          : options.map((option, i) => (
+              <option key={option} value={option}>
+                {buildOptionString(option)}
+              </option>
+            ))}
+      </select>
+    );
+
+    setSelect(refreshedSelect);
+  }, [defaultValue, options, config]);
+
   const buildDropdown = (options) => {
     let opts = [];
-    if (getAllKeys) {
-      for (const key in options[0]) {
-        opts.push(
-          <option key={key} value={key}>
-            {key
-              .split(' ')
-              .reduce((acc, val, i) => {
-                return (acc += val[0].toUpperCase() + val.slice(1));
-              }, '')[0]
-              .toUpperCase() + key.slice(1)}
-          </option>
-        );
-      }
-    } else {
-      specialObject &&
-        (() => {
-          let opt = options[0];
-          for (const key in options[0]) {
-            if (typeof opt[key] == 'number') {
-              opts.push(
-                <option key={key} value={key}>
-                  {key
-                    .split(' ')
-                    .reduce((acc, val, i) => {
-                      return (acc += val[0].toUpperCase() + val.slice(1));
-                    }, '')[0]
-                    .toUpperCase() + key.slice(1)}
-                </option>
-              );
-            }
-          }
-        })();
+    for (const key in options[0]) {
+      if (!key.length) continue;
+      opts.push(
+        <option key={key} value={key}>
+          {key
+            .split(' ')
+            .reduce((acc, val, i) => {
+              return (acc += val[0].toUpperCase() + val.slice(1));
+            }, '')[0]
+            .toUpperCase() + key.slice(1)}
+        </option>
+      );
     }
     return opts;
   };
@@ -59,22 +62,16 @@ const Dropdown = ({
     <div>
       <label>
         {labelText}
-        <select
-          onChange={(ev) => changeHandler(ev.target.value)}
-          value={type} 
-          className={styles.dropdownSelect}
-        >
-          {options.length && specialObject
-            ? buildDropdown(options)
-            : options.map((option, i) => (
-                <option key={option} value={option}>
-                  {buildOptionString(option)}
-                </option>
-              ))}
-        </select>
+        {select}
       </label>
     </div>
   );
 };
 
-export default Dropdown;
+const mapStateToProps = (state) => {
+  return {
+    config: getCurrentConfig(state.graph),
+  };
+};
+
+export default connect(mapStateToProps)(Dropdown);
