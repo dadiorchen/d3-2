@@ -1,41 +1,48 @@
 .graphFrame {
-  border: 2px solid black;
   border-radius: 10px;
-  margin: 0 1%;
+  border: 2px solid black;
+  margin: 0.5em;
+  min-height: calc(33vw);
   padding: 1% 1% 0 1%;
   width: 30%;
-  min-height: calc(33vw);
 }
-
 .frameHeader {
   display: flex;
   justify-content: flex-end;
+  align-items: center;
 }
 
 .deleteGraph {
-  /* background-color: rgb(235, 66, 66); */
+  background-color: #D6D6D6;
+  border-color: #5f5e5e;
+  border-radius: 7px;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+  cursor: pointer;
+  height:25px;
+  margin-left:.7em;
+  opacity:50%;
   text-align: center;
-  flex-basis: 5%;
+  width:25px;
 }
 
 .wrapper {
-  width: 100%;
   height: calc(27vw);
+  width: 100%;
 }
 
 .title {
-  margin: 1% 0 0 0;
-  text-align: center;
-  height: 10%;
-  font-size: 1.5rem;
   flex-basis: 90%;
+  font-size: 1.5rem;
+  height: 10%;
+  margin: 0 0 0 0;
+  text-align: center;
 }
 
 .descriptionDiv {
-  height: 10%;
-  overflow: scroll;
   background-color: white;
+  height: 10%;
   margin: 0 1% 1%;
+  overflow: scroll;
 }
 
 .description {
@@ -46,4 +53,5 @@
 
 .highlight {
   border: 5px solid rgb(255, 194, 81);
+  box-shadow: 0 0 15px #edd19e;
 }

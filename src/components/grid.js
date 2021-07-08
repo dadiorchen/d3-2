@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
 import * as d3 from 'd3';
 
-import { addGridToChart, createScalesAndFormats } from '../utility/svg';
+import { addGridToChart } from '../utility/svg/grid-axis';
+import { createScalesAndFormats } from '../utility/svg/scales';
 
-const Grid = ({ id, data, config, x_scale }) => {
+const Grid = ({ id, data, config }) => {
   const { xFormat, yFormat, dataPlots } = config;
   useEffect(() => {
     const { x, y } = createScalesAndFormats(config, data, true);

@@ -5,7 +5,7 @@ import * as d3 from 'd3';
 
 import PointGraph from '../src/components/point-graph';
 import { COLORS, DEFAULT_PROPERTIES } from '../src/utility/constants';
-import { filterDataByHighestOverTime } from '../src/utility/svg';
+import { filterDataByHighestOverTime } from '../src/utility/svg/helpers';
 
 const Dashboard = () => {
   const [barData, setBarData] = useState([]);

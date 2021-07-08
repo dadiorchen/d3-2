@@ -1,0 +1,22 @@
+.legend {
+  height: 100%;
+  width: 40%;
+  border: 1px solid black;
+  border-radius: 5px;
+  padding: 0.5%;
+}
+
+.legendPieces {
+  display: flex;
+  flex-direction: row;
+}
+
+.legendPieces p {
+  font-size: 0.7em;
+  margin: 0;
+  align-self: center;
+}
+
+.hidden {
+  display: none;
+}

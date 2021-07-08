@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import * as d3 from 'd3';
-
 import styles from '../../styles/SvgStyles.module.css';
-import { createScale, createSvg, createRect, createToolTip } from '../utility/svg';
+
+import { createScale } from '../utility/svg/scales';
+import { createSvg } from '../utility/svg/helpers';
+import { createToolTip } from '../utility/svg/tooltip';
 import { COLORS, scaleType, SVG } from '../utility/constants';
 
 const BarGraph = ({
@@ -115,6 +117,40 @@ const BarGraph = ({
   }, [currentPointIndex]);
 
   return <div className={`${parent} bar-graph`}></div>;
+};
+
+const createRect = (parent, height, width, x, y, rx, ry, fill, type, textValue = null, stroke) => {
+  let temp = width;
+  let rect = parent
+    .append('rect')
+    .attr('height', height)
+    .attr('width', width)
+    .attr('x', x)
+    .attr('y', y)
+    .attr('rx', rx)
+    .attr('ry', ry)
+    .attr('fill', fill)
+    .attr('stroke', stroke)
+    .attr('stroke-width', '2px')
+    .attr('class', `${type}-rect`);
+
+  textValue &&
+    parent
+      .append('text')
+      .attr('x', function (d, i) {
+        return (
+          x + 10 + parseInt(d3.select(Array.from(d3.selectAll(`.${type}-rect`))[i]).attr('width'))
+        );
+      })
+      .attr('y', y)
+      .attr('dy', '.35em')
+      .attr('y', function () {
+        return parseInt(d3.select(this).attr('y')) + 10;
+      })
+      .attr('font-weight', 400)
+      .text(textValue);
+
+  return rect;
 };
 
 export default BarGraph;

@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import * as d3 from 'd3';
+
+import { drawLegendLine, drawLegendDot } from '../utility/svg/legend';
+import { createScale } from '../utility/svg/scales';
+import { createToolTip } from '../utility/svg/tooltip';
 import {
-  createCircle,
-  createScale,
-  createSvg,
-  createToolTip,
+  filterDataByHighestOverTime,
   filterDataByLowestOverTime,
-  drawLegendLine,
-  addLegend,
-} from '../utility/svg';
-import { filterDataByHighestOverTime, addDays, drawLegendDot } from '../utility/svg';
+  addDays,
+  createSvg,
+} from '../utility/svg/helpers';
 
 import Toggle from './toggle';
 
@@ -325,5 +325,22 @@ function addAxisLabelToChart(svg, chartWidth, chartHeight, margin, text, ifXAxis
       .style('text-anchor', 'middle');
   }
 }
+
+const createCircle = (parent, cx, cy, r, fill, emphasizedID, setSelectedPointID) => {
+  return parent
+    .append('circle')
+    .attr('cx', cx)
+    .attr('cy', cy)
+    .attr('r', (d) => {
+      if (d.id == emphasizedID) {
+        setSelectedPointID(emphasizedID);
+        return '12';
+      } else {
+        return r;
+      }
+    })
+    .attr('fill', fill)
+    .style('cursor', 'pointer');
+};
 
 export default PointChart;

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import * as d3 from 'd3';
 
-import { addAxisLabelToChart } from '../utility/svg';
+import { addAxisLabelToChart } from '../utility/svg/grid-axis';
 
 const AxisLabel = ({ id, config: { dataPlots, horizontal, type }, ifX }) => {
   useEffect(() => {

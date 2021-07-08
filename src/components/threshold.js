@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import * as d3 from 'd3';
-import { drawThresholdLine } from '../utility/svg';
+import { drawThresholdLine } from '../utility/svg/threshold';
 
 const Threshold = ({ data, x, y, graphID, id }) => {
   useEffect(() => {

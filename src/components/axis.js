@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import * as d3 from 'd3';
-import { drawXAxis, drawYAxis, createScalesAndFormats, redrawYAxis } from '../utility/svg';
+import { drawXAxis, drawYAxis } from '../utility/svg/grid-axis';
+import { createScalesAndFormats } from '../utility/svg/scales';
 
 const Axis = ({ scale: { scale, formatter }, ifX, id, data, config }) => {
   const { xFormat, yFormat, dataPlots, horizontal, type } = config;

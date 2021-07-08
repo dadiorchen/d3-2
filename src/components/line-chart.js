@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 
-import { createScalesAndFormats, renderLineChart } from '../utility/svg';
+import { createScalesAndFormats } from '../utility/svg/scales';
+import { renderLineChart } from '../utility/svg/line';
 import { SVG } from '../utility/constants';
-import { getGraphConfig, getGraphData } from '../redux/reducer/graph-reducer';
+import { getGraphConfig, getGraphData } from '../redux/getters/getters';
 
 const LineChart = ({ id, config, data }) => {
   const { xFormat, yFormat, grid, dataPlots } = config;

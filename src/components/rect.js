@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import * as d3 from 'd3';
 
-import { renderRect } from '../utility/svg';
+import { renderRect } from '../utility/svg/bar';
 
 const Rect = ({ id, data, x, y, config, xVal, yVal }) => {
   useEffect(() => {

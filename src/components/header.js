@@ -7,7 +7,7 @@ const Header = () => {
   return (
     <div className={styles.header}>
       <nav className={styles.usecase}>
-        <h3>KYC Document Handling</h3>
+        <h3>Sketchy Bar</h3>
       </nav>
       <div className={styles.menuItems}>
         <nav>

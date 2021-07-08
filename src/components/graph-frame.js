@@ -1,5 +1,9 @@
 import React, { useEffect } from 'react';
 import styles from '../../styles/GraphFrame.module.css';
+import { confirmAlert } from "react-confirm-alert";
+import "react-confirm-alert/src/react-confirm-alert.css";
+import { GRAPH_TYPE } from '../utility/constants';
+import Legend from './legend';
 
 const GraphFrame = (props) => {
   const { id, setSelectedGraph, selected, handleDelete, title, type } = props;
@@ -21,27 +25,37 @@ const GraphFrame = (props) => {
     generatePNGAndDownload(
       document.getElementById(`frame-${id}`),
       () => {
+        document.getElementById(`frame-${id}`).style.border = "5px solid white";
         Array.from(document.getElementsByClassName("GraphFrame_deleteGraph__3ldRg")).forEach(e => e.style.display = "none");
         document.getElementById(`${type}Chart-${id}`).setAttribute("height", "395px");
         document.getElementById(`${type}Chart-${id}`).setAttribute("width", "393px");
 
       },
       () => {
+        document.getElementById(`frame-${id}`).style.border = ''
         Array.from(document.getElementsByClassName("GraphFrame_deleteGraph__3ldRg")).forEach(e => e.style.display = "");
         document.getElementById(`${type}Chart-${id}`).removeAttribute("height");
         document.getElementById(`${type}Chart-${id}`).removeAttribute("width");
-        setTimeout(() => alert("Downloading the file..."),0);
+        confirmAlert({
+          title: "Chart Downloaded!",
+          buttons: [
+            {
+              label: "OK",
+            }
+          ]
+        });
       }
     )
   }
   return (
     <div className={styles.graphFrame} id={`frame-${id}`} onClick={handleClick}>
       <div className={styles.frameHeader}>
+        <Legend id={id} />
         <h2 className={styles.title}>{title || 'Chart Title'}</h2>
         <button title='download' className={styles.deleteGraph} onClick={() => handleDownload({ id })}>
-          ↓
+        ↓
         </button>
-        <button className={styles.deleteGraph} onClick={() => handleDelete({ id })}>
+        <button className={styles.deleteGraph} onClick={(e) => {e.stopPropagation();handleDelete({ id })}}>
           X
         </button>
       </div>

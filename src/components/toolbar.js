@@ -4,8 +4,9 @@ import { connect } from 'react-redux';
 import styles from '../../styles/Toolbar.module.css';
 import Checkbox from './input/checkbox';
 import Dropdown from './input/dropdown';
-import TextInput from './input/text-input';
+//import TextInput from './input/text-input';
 import FileUpload from './input/file-upload';
+//import Head from 'next/head';
 
 import {
   AVAILABLE_Y_FORMATS,
@@ -25,34 +26,29 @@ import {
 import {
   setGraphType,
   setGrid,
-  unsetGrid,
   setColorScheme,
   setSpecificColor,
-  setXVal,
+  setXParameter,
   setXFormat,
-  setYVal,
+  setYParameter,
   setYFormat,
   setCurveType,
-  setData,
   setXLabel,
   setYLabel,
   addGraph,
-  setHighestId,
-  setSelectedGraph,
   setHorizontal,
-  unsetHorizontal,
   setBackfill,
-  unsetBackfill,
   addDataPlot,
+  removeDataPlot,
   setPointShape,
   setThreshold,
-  unsetThreshold,
   setPadAngle,
-  unsetPadAngle,
   setIfDonut,
-  unsetIfDonut,
-} from '../redux/actions/toolbar-action';
-import { getCurrentConfig, getHighestId, getCurrentData } from '../redux/reducer/graph-reducer';
+  setSelectedGraph,
+  setHighestId,
+  setData,
+} from '../redux/actions/actions';
+import { getCurrentConfig, getHighestId, getCurrentData } from '../redux/getters/getters';
 import { handleCSVIinputFile, handleJSONIinputFile } from './input/input-utility';
 
 const Toolbar = (props) => {
@@ -66,39 +62,45 @@ const Toolbar = (props) => {
     setLabelForX,
     setColorScheme,
     setSpecificColor,
-    setYVal,
-    setXVal,
+    setYParameter,
+    setXParameter,
     setGrid,
-    unsetGrid,
     setYFormat,
     setXFormat,
     setCurveType,
     setHorizontal,
-    unsetHorizontal,
     setBackfill,
-    unsetBackfill,
     setData,
     addDataPlot,
+    removeDataPlot,
     addGraph,
     highestId,
     setHighestId,
     setSelectedGraph,
     setPointShape,
     setThreshold,
-    unsetThreshold,
     setPadAngle,
-    unsetPadAngle,
     setIfDonut,
-    unsetIfDonut,
   } = props;
+  React.useEffect(() => {
+    fileUploadInput.current.value = null;
+  }, [config]);
+
+  const handleNewGraph = () => {
+    const newID = highestId + 1;
+    addGraph({ id: newID });
+    setData({ id: newID });
+    setHighestId(newID);
+    setSelectedGraph(newID);
+    document.querySelector('.highlight')?.classList.remove('highlight');
+  };
 
   if (!config)
     return (
-      <div className={styles.toolbarContainer}>
-        Choose a graph to work on or create a new one!
-        <button onClick={handleNewGraph} className={`${styles.buffer}`}>
-          <p className={styles.plusSign}>+</p>
-          <p className={styles.addNew}>Add New Graph</p>
+      <div className={styles.toolbarContainer} ref={fileUploadInput}>
+        <button onClick={handleNewGraph} className={`${styles.addNewGraph}  ${styles.addBtn}`}>
+          <div className={styles.plusSign}>+</div>
+          <div className={styles.addNew}>Add New Graph</div>
         </button>
       </div>
     );
@@ -123,12 +125,8 @@ const Toolbar = (props) => {
     threshold,
   } = config;
 
-  const handleCheckbox = (property, onChange, offChange) => {
-    if (!property) {
-      return onChange({ id });
-    } else {
-      return offChange({ id });
-    }
+  const handleCheckbox = (boolean, onChange, property) => {
+    return onChange({ id, [property]: !boolean });
   };
 
   const handleSetLabelCheckbox = (coord) => {
@@ -172,22 +170,25 @@ const Toolbar = (props) => {
     setData({ id, data: uploadedData, flipTrueHits });
   }
 
-  const handleNewGraph = () => {
-    const newID = highestId + 1;
-    addGraph({ id: newID });
-    setData({ id: newID });
-    setHighestId(newID);
-    setSelectedGraph(newID);
-    document.querySelector('.highlight')?.classList.remove('highlight');
-  };
-
-  React.useEffect(() => {
-    fileUploadInput.current.value = null;
-  }, [config]);
-
   return (
     <div className={styles.toolbarContainer}>
-      <div className={`${styles.column} ${styles.buffer}`}>
+      {/* <Head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Oxygen&display=swap"
+          rel="stylesheet"
+        />
+      </Head> */}
+      <div className={`${styles.toolbarColumn} ${styles.buffer}`}>
+        <FileUpload
+          labelText={'Upload File'}
+          ref={fileUploadInput}
+          className={'file-input'}
+          changeHandler={(ev) => handleFileUpload(ev)}
+        />
+      </div>
+      <div className={`${styles.toolbarColumn} ${styles.buffer}`}>
         <Dropdown
           labelText={'Type of Graph:'}
           changeHandler={(type) => setGraphType({ id, type })}
@@ -195,96 +196,81 @@ const Toolbar = (props) => {
           type={type}
           defaultValue={type}
         />
-        <FileUpload
-          labelText={'Upload File'}
-          ref={fileUploadInput}
-          className={'file-input'}
-          changeHandler={(ev) => handleFileUpload(ev)}
-        />
         <Checkbox
           labelText={'Flip True Hits?'}
           checked={flipTrueHits}
-          changeHandler={() =>
-            handleCheckbox(
-              flipTrueHits,
-              () => setFlipTrueHits(true),
-              () => setFlipTrueHits(false)
-            )
-          }
+          changeHandler={() => setFlipTrueHits(!flipTrueHits)}
         />
       </div>
-      {type != GRAPH_TYPE.PIE ? (
-        <div className={`${styles.column} ${styles.buffer}`}>
-          <div className={styles.pair}>
-            <Dropdown
-              labelText={'Choose X Scale: '}
-              changeHandler={(format) => setXFormat({ id, xFormat: format })}
-              options={type == GRAPH_TYPE.BAR ? AVAILABLE_X_FORMATS_BAR : AVAILABLE_X_FORMATS}
-              type={type}
-              defaultValue={xFormat}
-            />
-          </div>
-          <div className={styles.pair}>
-            <Dropdown
-              labelText={'Choose Y Scale: '}
-              changeHandler={(format) => setYFormat({ id, yFormat: format })}
-              options={type == GRAPH_TYPE.BAR ? AVAILABLE_Y_FORMATS_BAR : AVAILABLE_Y_FORMATS}
-              type={type}
-              defaultValue={yFormat}
-            />{' '}
-          </div>
+      {type != GRAPH_TYPE.PIE && (
+        <div className={`${styles.toolbarColumn} ${styles.buffer}`}>
+          <Dropdown
+            labelText={'X Scale: '}
+            changeHandler={(format) => setXFormat({ id, xFormat: format })}
+            options={type == GRAPH_TYPE.BAR ? AVAILABLE_X_FORMATS_BAR : AVAILABLE_X_FORMATS}
+            type={type}
+            defaultValue={xFormat}
+          />
+          <Dropdown
+            labelText={'Y Scale: '}
+            changeHandler={(format) => setYFormat({ id, yFormat: format })}
+            options={type == GRAPH_TYPE.BAR ? AVAILABLE_Y_FORMATS_BAR : AVAILABLE_Y_FORMATS}
+            type={type}
+            defaultValue={yFormat}
+          />
         </div>
-      ) : null}
+      )}
       {type != GRAPH_TYPE.PIE ? (
         dataPlots.map((dataPlot, i, arr) => {
           return (
-            <div
-              className={`${styles.column} ${styles.smallBuffer} ${styles.rightAlign}`}
-              key={`plot-${i}`}
-            >
-              <Dropdown
-                labelText={i == 0 ? 'Choose X Parameter:' : `${i + 1} X: `}
-                changeHandler={(val) => setXVal({ id, dataPlotID: i, xVal: val })}
-                options={data}
-                type={type}
-                specialObject={true}
-                defaultValue={dataPlot.xVal}
-                key={`x-param-${i}`}
-              />
-              <Dropdown
-                labelText={i == 0 ? 'Choose Y Parameter:' : `${i + 1} Y: `}
-                changeHandler={(val) => setYVal({ id, dataPlotID: i, yVal: val })}
-                options={data}
-                type={type}
-                specialObject={true}
-                defaultValue={dataPlot.yVal}
-                key={`y-param-${i}`}
-              />
-              {arr.length > 1 && type != GRAPH_TYPE.BAR && (
+            <>
+              <div className={`${styles.toolbarColumn}`} key={`plot-${i}`}>
                 <Dropdown
-                  labelText={'Color:'}
-                  changeHandler={(color) => setSpecificColor({ id, dataPlotID: i, color })}
-                  options={POINT_COLOR_OPTIONS}
+                  labelText={i == 0 ? 'X Parameter:' : `${i + 1} X: `}
+                  changeHandler={(val) => setXParameter({ id, dataPlotID: i, xVal: val })}
+                  options={data}
                   type={type}
-                  default={colorScheme}
-                  key={`color-${i}`}
+                  specialObject={true}
+                  defaultValue={dataPlot.xVal}
+                  key={`x-param-${i}`}
                 />
-              )}
-              {arr.length > 1 && type == GRAPH_TYPE.POINT && (
                 <Dropdown
-                  labelText={'Shape:'}
-                  changeHandler={(shape) => setPointShape({ id, dataPlotID: i, shape })}
-                  options={['circle', 'triangle', 'square', 'cross', 'diamond']}
+                  labelText={i == 0 ? 'Y Parameter:' : `${i + 1} Y: `}
+                  changeHandler={(val) => setYParameter({ id, dataPlotID: i, yVal: val })}
+                  options={data}
                   type={type}
+                  specialObject={true}
+                  defaultValue={dataPlot.yVal}
+                  key={`y-param-${i}`}
                 />
-              )}
-            </div>
+              </div>
+              <div className={`${styles.toolbarColumnExtraPlot}`}>
+                {arr.length > 1 && type != GRAPH_TYPE.BAR && (
+                  <Dropdown
+                    labelText={'Color:'}
+                    changeHandler={(color) => setSpecificColor({ id, dataPlotID: i, color })}
+                    options={POINT_COLOR_OPTIONS}
+                    type={type}
+                    default={colorScheme}
+                    key={`color-${i}`}
+                  />
+                )}
+                {arr.length > 1 && type == GRAPH_TYPE.POINT && (
+                  <Dropdown
+                    labelText={'Shape:'}
+                    changeHandler={(shape) => setPointShape({ id, dataPlotID: i, shape })}
+                    options={['circle', 'triangle', 'square', 'cross', 'diamond']}
+                    type={type}
+                  />
+                )}
+              </div>
+            </>
           );
         })
       ) : (
         <Dropdown
           labelText={'Choose Property:'}
-          changeHandler={(val) => setXVal({ id, dataPlotID: 0, xVal: val })}
+          changeHandler={(val) => setXParameter({ id, dataPlotID: 0, xVal: val })}
           options={data}
           type={type}
           specialObject={true}
@@ -292,42 +278,55 @@ const Toolbar = (props) => {
           key={`x-prop-${id}`}
         />
       )}
-      <div className={`${styles.column} ${styles.buffer}`}>
-        {type != GRAPH_TYPE.BAR && type != GRAPH_TYPE.PIE && (
-          <>
-            <button onClick={() => addDataPlot({ id })}>Add Other Plot</button>
-            <Checkbox
-              labelText={'Grid'}
-              checked={grid}
-              changeHandler={() => handleCheckbox(grid, setGrid, unsetGrid)}
-            />
-          </>
+      <div className={`${styles.toolbarColumn} ${styles.buffer}`}>
+        {type != GRAPH_TYPE.PIE && type != GRAPH_TYPE.BAR && dataPlots.length < 3 && (
+          <button
+            className={`${styles.addPlot} ${styles.addBtn}`}
+            onClick={() => {
+              if (dataPlots.length < 3) addDataPlot({ id });
+            }}
+          >
+            Add Plot
+          </button>
+          
+        )}
+         {type != GRAPH_TYPE.PIE && type != GRAPH_TYPE.BAR && dataPlots.length >1 && (
+          <button
+            className={`${styles.addPlot} ${styles.addBtn}`}     
+            onClick={() => {
+             removeDataPlot({ id })
+            }}
+          >
+            Remove Plot
+          </button>
+          
+        )}
+        {type != GRAPH_TYPE.PIE && (
+          <Checkbox
+            labelText={'Grid'}
+            checked={grid}
+            changeHandler={() => handleCheckbox(grid, setGrid, 'grid')}
+          />
         )}
         {type === GRAPH_TYPE.POINT && (
           <Checkbox
             labelText={'Threshold'}
             checked={threshold}
-            changeHandler={() =>
-              handleCheckbox(
-                threshold,
-                () => setThreshold({ id }),
-                () => unsetThreshold({ id })
-              )
-            }
+            changeHandler={() => handleCheckbox(threshold, setThreshold, 'threshold')}
           />
         )}
         {type == GRAPH_TYPE.BAR && (
           <Checkbox
             labelText={'Horizontal'}
             checked={horizontal}
-            changeHandler={() => handleCheckbox(horizontal, setHorizontal, unsetHorizontal)}
+            changeHandler={() => handleCheckbox(horizontal, setHorizontal, 'horizontal')}
           />
         )}
         {type == GRAPH_TYPE.BAR && horizontal && (
           <Checkbox
             labelText={'Backfill'}
             checked={backfill}
-            changeHandler={() => handleCheckbox(backfill, setBackfill, unsetBackfill)}
+            changeHandler={() => handleCheckbox(backfill, setBackfill, 'backfill')}
           />
         )}
         {type == GRAPH_TYPE.PIE && (
@@ -335,22 +334,22 @@ const Toolbar = (props) => {
             <Checkbox
               labelText={'Donut Layout'}
               checked={ifDonut}
-              changeHandler={() => handleCheckbox(ifDonut, setIfDonut, unsetIfDonut)}
+              changeHandler={() => handleCheckbox(ifDonut, setIfDonut, 'ifDonut')}
               key={`donut`}
             />
             <Checkbox
               labelText={'Pie Padding'}
               checked={padAngle}
-              changeHandler={() => handleCheckbox(padAngle, setPadAngle, unsetPadAngle)}
+              changeHandler={() => handleCheckbox(padAngle, setPadAngle, 'padAngle')}
               key={`padAngle`}
             />
           </>
         )}
       </div>
-      <div className={`${styles.column} ${styles.buffer}`}>
+      <div className={`${styles.toolbarColumn} ${styles.buffer}`}>
         {(dataPlots.length < 2 || type == GRAPH_TYPE.BAR) && (
           <Dropdown
-            labelText={'Select a Color Scheme:'}
+            labelText={'Color Scheme:'}
             options={type == GRAPH_TYPE.LINE ? LINE_COLORS : BAR_POINT_COLORS}
             changeHandler={(color) => setColorScheme({ id, colorScheme: color })}
             defaultValue={colorScheme}
@@ -365,9 +364,9 @@ const Toolbar = (props) => {
           />
         )}
       </div>
-      <button onClick={handleNewGraph} className={`${styles.buffer}`}>
-        <p className={styles.plusSign}>+</p>
-        <p className={styles.addNew}>Add New Graph</p>
+      <button onClick={handleNewGraph} className={`${styles.addNewGraph}  ${styles.addBtn}`}>
+        <div className={styles.plusSign}>+</div>
+        <div className={styles.addNew}>Add New Graph</div>
       </button>
     </div>
   );
@@ -384,33 +383,28 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     setGrid: (id) => dispatch(setGrid(id)),
-    unsetGrid: (id) => dispatch(unsetGrid(id)),
     setColorScheme: (scheme) => dispatch(setColorScheme(scheme)),
     setSpecificColor: (color) => dispatch(setSpecificColor(color)),
     setLabelForX: (label) => dispatch(setXLabel(label)),
     setLabelForY: (label) => dispatch(setYLabel(label)),
     setGraphType: (type) => dispatch(setGraphType(type)),
-    setYVal: (yVal) => dispatch(setYVal(yVal)),
+    setYParameter: (yVal) => dispatch(setYParameter(yVal)),
     setYFormat: (format) => dispatch(setYFormat(format)),
-    setXVal: (xVal) => dispatch(setXVal(xVal)),
+    setXParameter: (xVal) => dispatch(setXParameter(xVal)),
     setXFormat: (format) => dispatch(setXFormat(format)),
     setCurveType: (curveType) => dispatch(setCurveType(curveType)),
     setHorizontal: (id) => dispatch(setHorizontal(id)),
-    unsetHorizontal: (id) => dispatch(unsetHorizontal(id)),
     setBackfill: (id) => dispatch(setBackfill(id)),
-    unsetBackfill: (id) => dispatch(unsetBackfill(id)),
     setData: (data) => dispatch(setData(data)),
     addGraph: (id) => dispatch(addGraph(id)),
     addDataPlot: (id) => dispatch(addDataPlot(id)),
+    removeDataPlot: (id) => dispatch(removeDataPlot(id)),
     setHighestId: (id) => dispatch(setHighestId(id)),
     setSelectedGraph: (id) => dispatch(setSelectedGraph(id)),
     setPointShape: (shape) => dispatch(setPointShape(shape)),
     setThreshold: (id) => dispatch(setThreshold(id)),
-    unsetThreshold: (id) => dispatch(unsetThreshold(id)),
     setIfDonut: (id) => dispatch(setIfDonut(id)),
-    unsetIfDonut: (id) => dispatch(unsetIfDonut(id)),
     setPadAngle: (id) => dispatch(setPadAngle(id)),
-    unsetPadAngle: (id) => dispatch(unsetPadAngle(id)),
   };
 };
 

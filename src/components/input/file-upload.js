@@ -5,7 +5,9 @@ import styles from '../../../styles/Components.module.css';
 const FileUpload = React.forwardRef(({ labelText, changeHandler }, ref) => {
   return (
     <div className={styles.upload}>
-      <p className={styles.label}>{labelText}</p>
+      <button className={styles.uploadBtn}>
+        <div className={styles.uploadText}>Upload File</div>
+      </button>
       <input
         className={styles.input}
         ref={ref}

@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 
-import { getGraphConfig, getGraphData } from '../redux/reducer/graph-reducer';
+import { getGraphConfig, getGraphData } from '../redux/getters/getters';
 
-import { createScalesAndFormats, renderBarChart } from '../utility/svg';
+import { createScalesAndFormats } from '../utility/svg/scales';
+import { renderBarChart } from '../utility/svg/bar';
 import { SVG } from '../utility/constants';
 
 const BarChart = ({ id, config, data }) => {

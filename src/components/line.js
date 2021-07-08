@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import * as d3 from 'd3';
 
-import { renderLine } from '../utility/svg';
+import { renderLine } from '../utility/svg/line';
 
 const Line = ({ id, data, x, y, config, dataPlot, ifOwnColor }) => {
   useEffect(() => {

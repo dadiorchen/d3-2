@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 
 import styles from '../../../styles/Components.module.css';
-import { getCurrentConfig } from '../../redux/reducer/graph-reducer';
+import { getCurrentConfig } from '../../redux/getters/getters';
 
 const Dropdown = ({
   options,
@@ -61,7 +61,7 @@ const Dropdown = ({
   return (
     <div>
       <label>
-        {labelText}
+      <div className={styles.label}> {labelText}</div> 
         {select}
       </label>
     </div>

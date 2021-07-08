@@ -1,57 +1,74 @@
 .toolbarContainer {
-  background-color: #ececec;
-  height: 20%;
-  display: flex;
-  justify-content: center;
   align-items: center;
-  width: 100vw;
+  background-color: #ececec;
+  box-shadow: 0px 3px 10px  -1px rgba(41, 41, 41, 0.4);
+  display: flex;
+  height: 10rem;
+  justify-content: center;
+  margin-bottom:0.5rem;
+  width:100%;
 }
 
-.labelDiv {
-  margin-top: 20px;
-}
-
-.column {
+.toolbarColumn {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  justify-content: flex-start;
 }
-
-.rightAlign {
-  align-items: flex-end;
+.toolbarColumnExtraPlot:not(:last-child){
+  margin-right:1.2em;
 }
-
-.pair {
-  display: flex;
+.toolbarColumn:nth-child(11) {
+  margin-left:-2em; 
 }
-
+.toolbarColumn:nth-child(3) {
+  margin-right:1em; 
+}
 .plusSign {
-  font-size: 3em;
-  margin: 5% 0 0 0;
+  font-size: 2em;
+  padding-right:0.4em;
 }
-
+.addBtn{
+  background-color: #4D86D1;
+  background-image: radial-gradient(circle, transparent 1%, #417cc9 1%);
+  background-position:center;
+  background-size: 11000%;
+  border-radius: 5px;
+  border:none;
+  box-shadow:rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  color:white;
+  cursor: pointer;
+  letter-spacing: 0.08em;
+  overflow: hidden;
+  transition: background 0.6s;
+  white-space: nowrap;
+}
+.addPlot{
+  margin-bottom:1em;
+  padding: .5em 1em;
+ 
+}
+.addNewGraph {
+  align-content: center;
+  align-items: center;
+  display: flex;
+  border-radius: 7px;
+  flex-direction: row;
+  font-size:1.09em; 
+  justify-content: center;
+  margin-left:1.4em;
+  min-width:156px; 
+  padding: .2em .9em;
+}
+.addNewGraph:active {
+  background-color: #5D91D5;
+  background-size: 100%;
+  transform: scale(0.98);
+  transition: background 0s;
+}
 .addNew {
-  margin-top: 0;
+  font-weight:400;  
 }
 
 .buffer {
-  margin: 0 2%;
-}
-
-.smallBuffer {
-  margin: 0 1%;
-}
-
-.upload {
-  margin-left: 10%;
-}
-
-.label {
-  display: inline-block;
-  margin-left: 10%;
-}
-
-.input {
-  display: inline-block;
+  margin: 0 1.3em;
 }

@@ -4,11 +4,12 @@ import styles from '../../../styles/Components.module.css';
 
 const Checkbox = ({ labelText, checked, changeHandler }) => {
   return (
-    <label className={styles.checkbox}>
-      <input type="checkbox" checked={checked} onChange={changeHandler} />
+    <label>
       {labelText}
+      <input type="checkbox" checked={checked} onChange={changeHandler}  className={styles.checkbox} />
     </label>
   );
 };
+
 
 export default Checkbox;

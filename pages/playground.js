@@ -4,14 +4,13 @@ import { connect } from 'react-redux';
 import styles from '../styles/Home.module.css';
 import Head from 'next/head';
 
-import { getCurrentConfig, getAllIdAndType } from '../src/redux/reducer/graph-reducer';
+import { getCurrentConfig, getAllIdAndType } from '../src/redux/getters/getters';
 import Toolbar from '../src/components/toolbar';
 import GraphFrame from '../src/components/graph-frame';
 import BarChart from '../src/components/bar-chart';
 import PointChart from '../src/components/point-chart';
 import LineChart from '../src/components/line-chart';
-import { setSelectedGraph } from '../src/redux/actions/toolbar-action';
-import { deleteGraph } from '../src/redux/actions/bar-action';
+import { setSelectedGraph, deleteGraph } from '../src/redux/actions/actions';
 
 import PieChart from '../src/components/pie-chart';
 
@@ -75,7 +74,7 @@ const Playground = (props) => {
                   var dataURL = canvas.toDataURL();
                   const div = document.createElement("div");
                   document.body.appendChild(div);
-                  div.innerHTML = '<a id="a1" href="' + dataURL + '" download="down.png" style="display:none" >download</a>';
+                  div.innerHTML = '<a id="a1" href="' + dataURL + '" download="chart.png" style="display:none" >download</a>';
                   document.getElementById("a1").click();
                   afterHook && afterHook();
                   document.body.removeChild(div);
