@@ -100,7 +100,8 @@ export const configs = createSlice({
     },
     removeDataPlot: (state, action) => {
       const { id } = action.payload;
-      return  {...state[id], dataPlots: state[id].dataPlots.slice(0,-1)}
+      state[id].dataPlots.pop();
+      return state;
     },
     setThreshold: (state, action) => commonReducerHandler(state, action, 'threshold'),
     setIfDonut: (state, action) => commonReducerHandler(state, action, 'ifDonut'),
