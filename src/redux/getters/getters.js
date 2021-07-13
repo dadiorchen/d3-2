@@ -12,3 +12,5 @@ export const getGraphData = (state, id) => state.allGraphs[id].data;
 export const getHighestId = (state) => state.highestId;
 
 export const getCurrentData = (state) => state.allGraphs[state.selectedGraph].data;
+
+export const getCurrentFileName = (state) =>  state.allGraphs[state.selectedGraph].fileName;

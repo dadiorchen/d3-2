@@ -4,9 +4,9 @@ import { connect } from 'react-redux';
 import styles from '../../styles/Toolbar.module.css';
 import Checkbox from './input/checkbox';
 import Dropdown from './input/dropdown';
-//import TextInput from './input/text-input';
+import TextInput from './input/text-input';
 import FileUpload from './input/file-upload';
-//import Head from 'next/head';
+import Head from 'next/head';
 
 import {
   AVAILABLE_Y_FORMATS,
@@ -39,7 +39,6 @@ import {
   setHorizontal,
   setBackfill,
   addDataPlot,
-  removeDataPlot,
   setPointShape,
   setThreshold,
   setPadAngle,
@@ -72,9 +71,9 @@ const Toolbar = (props) => {
     setBackfill,
     setData,
     addDataPlot,
-    removeDataPlot,
     addGraph,
     highestId,
+    fileName,
     setHighestId,
     setSelectedGraph,
     setPointShape,
@@ -161,31 +160,37 @@ const Toolbar = (props) => {
 
   function onReaderLoad(ev) {
     const inputFileType = fileUploadInput.current.value;
+    const fileName = fileUploadInput.current.files[0].name.slice(0,-4)
     let uploadedData;
     if (IS_CSV.test(inputFileType)) {
       uploadedData = handleCSVIinputFile(ev.target.result);
     } else {
       uploadedData = handleJSONIinputFile(ev.target.result);
     }
-    setData({ id, data: uploadedData, flipTrueHits });
+    setData({ id, data: uploadedData, flipTrueHits, fileName });
   }
 
   return (
     <div className={styles.toolbarContainer}>
-      {/* <Head>
+      <Head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link
           href="https://fonts.googleapis.com/css2?family=Oxygen&display=swap"
           rel="stylesheet"
         />
-      </Head> */}
+      </Head>
       <div className={`${styles.toolbarColumn} ${styles.buffer}`}>
         <FileUpload
           labelText={'Upload File'}
           ref={fileUploadInput}
           className={'file-input'}
           changeHandler={(ev) => handleFileUpload(ev)}
+        />
+        <Checkbox
+          labelText={'Flip True Hits?'}
+          checked={flipTrueHits}
+          changeHandler={() => setFlipTrueHits(!flipTrueHits)}
         />
       </div>
       <div className={`${styles.toolbarColumn} ${styles.buffer}`}>
@@ -195,11 +200,6 @@ const Toolbar = (props) => {
           options={AVAILABLE_GRAPHS}
           type={type}
           defaultValue={type}
-        />
-        <Checkbox
-          labelText={'Flip True Hits?'}
-          checked={flipTrueHits}
-          changeHandler={() => setFlipTrueHits(!flipTrueHits)}
         />
       </div>
       {type != GRAPH_TYPE.PIE && (
@@ -286,20 +286,8 @@ const Toolbar = (props) => {
               if (dataPlots.length < 3) addDataPlot({ id });
             }}
           >
-            Add Plot
+            Add Other Plot
           </button>
-          
-        )}
-         {type != GRAPH_TYPE.PIE && type != GRAPH_TYPE.BAR && dataPlots.length >1 && (
-          <button
-            className={`${styles.addPlot} ${styles.addBtn}`}     
-            onClick={() => {
-             removeDataPlot({ id })
-            }}
-          >
-            Remove Plot
-          </button>
-          
         )}
         {type != GRAPH_TYPE.PIE && (
           <Checkbox
@@ -377,6 +365,7 @@ const mapStateToProps = (state) => {
     config: getCurrentConfig(state.graph),
     highestId: getHighestId(state.graph),
     data: getCurrentData(state.graph),
+   // fileName: getCurrentFileName(state.graph)
   };
 };
 
@@ -398,7 +387,6 @@ const mapDispatchToProps = (dispatch) => {
     setData: (data) => dispatch(setData(data)),
     addGraph: (id) => dispatch(addGraph(id)),
     addDataPlot: (id) => dispatch(addDataPlot(id)),
-    removeDataPlot: (id) => dispatch(removeDataPlot(id)),
     setHighestId: (id) => dispatch(setHighestId(id)),
     setSelectedGraph: (id) => dispatch(setSelectedGraph(id)),
     setPointShape: (shape) => dispatch(setPointShape(shape)),

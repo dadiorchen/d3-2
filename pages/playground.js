@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import styles from '../styles/Home.module.css';
 import Head from 'next/head';
 
-import { getCurrentConfig, getAllIdAndType } from '../src/redux/getters/getters';
+import { getCurrentConfig, getAllIdAndType, getCurrentFileName } from '../src/redux/getters/getters';
 import Toolbar from '../src/components/toolbar';
 import GraphFrame from '../src/components/graph-frame';
 import BarChart from '../src/components/bar-chart';
@@ -39,19 +39,21 @@ const Playground = (props) => {
       }
     }
   };
-
   const renderGraphs = (allIdAndType) => {
+    console.log(props.fileName);
+
     return allIdAndType.map((el, i, arr) => {
       let selected = false;
       if (i == arr.length - 1) selected = true;
       return (
-        <GraphFrame
+        <GraphFrame 
           key={`frame-${el.id}`}
           id={el.id}
           type={el.type}
           setSelectedGraph={setSelectedGraph}
           handleDelete={deleteGraph}
           selected={selected}
+          title={props.fileName}
         >
           {createGraph(el.type, el.id)}
         </GraphFrame>
@@ -95,6 +97,7 @@ const mapStateToProps = (state) => {
   return {
     config: getCurrentConfig(state.graph),
     allIdAndType: getAllIdAndType(state.graph),
+    fileName: getCurrentFileName(state.graph)
   };
 };
 

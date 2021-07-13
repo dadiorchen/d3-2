@@ -22,7 +22,6 @@ export const {
   setHorizontal,
   setBackfill,
   addDataPlot,
-  removeDataPlot,
   setPointShape,
   setThreshold,
   setPadAngle,

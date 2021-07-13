@@ -8,8 +8,14 @@ import { addGridToChart } from './grid-axis';
 export const createZoomFunctionality = (x_scale, y_scale, config, data) => {
   const currentScales = createScalesAndFormats(config, data, false);
 
+  const axisScales = createScalesAndFormats(config, data, true);
+  const pointScales = createScalesAndFormats(config, data, false);
+
   const zoomChart = (e, id, config, brush) => {
-    const { x, y } = currentScales;
+    let { x, y } = currentScales;
+    if (config.yFormat === 'linear') {
+      y.scale.range([SVG.HEIGHT + SVG.MARGIN.top, SVG.MARGIN.top]);
+    }
     if (!e.selection) return;
 
     const xExtent = [e.selection[0][0], e.selection[1][0]];
@@ -68,6 +74,20 @@ export const createZoomFunctionality = (x_scale, y_scale, config, data) => {
     const yAxis = d3.select(`#axis-${id}-y`);
     yAxis.transition().duration(1000).call(d3.axisLeft(y.scale));
 
+    d3.select(`#grid-${id}`).selectAll('*').remove();
+    addGridToChart(
+      d3.select(`#grid-${id}`),
+      x.scale,
+      y.scale,
+      config.xFormat,
+      data,
+      config.dataPlots
+    );
+
+    if (config.yFormat === 'linear') {
+      y.scale.range([0, SVG.HEIGHT]);
+    }
+
     config.dataPlots.forEach((dataPlot, i, arr) => {
       const parent = d3.select(`#circle-${id}-${i}`);
 
@@ -112,16 +132,6 @@ export const createZoomFunctionality = (x_scale, y_scale, config, data) => {
           });
       }
     });
-
-    d3.select(`#grid-${id}`).selectAll('*').remove();
-    addGridToChart(
-      d3.select(`#grid-${id}`),
-      x.scale,
-      y.scale,
-      config.xFormat,
-      data,
-      config.dataPlots
-    );
 
     if (d3.select(`#zoom-dir-${id}`)) {
       d3.select(`#zoom-dir-${id}`).remove();

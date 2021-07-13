@@ -14,9 +14,11 @@ export const initialState = {
       colorScheme: 'rainbow',
       grid: false,
       type: 'bar',
+      fileName: 'Chart Titleee',
     },
     data: [],
     entryPointProperty: '',
+    fileName: 'Chart Titleee',
   },
   allToolbarProperties: {
     colorScheme: 'rainbow',

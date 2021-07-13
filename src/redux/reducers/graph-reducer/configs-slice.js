@@ -98,10 +98,6 @@ export const configs = createSlice({
       });
       return state;
     },
-    removeDataPlot: (state, action) => {
-      const { id } = action.payload;
-      return  {...state[id], dataPlots: state[id].dataPlots.slice(0,-1)}
-    },
     setThreshold: (state, action) => commonReducerHandler(state, action, 'threshold'),
     setIfDonut: (state, action) => commonReducerHandler(state, action, 'ifDonut'),
     setPadAngle: (state, action) => commonReducerHandler(state, action, 'padAngle'),

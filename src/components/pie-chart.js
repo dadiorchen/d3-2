@@ -8,10 +8,10 @@ import { getGraphConfig, getGraphData } from '../redux/getters/getters';
 
 const PieChart = ({ id, config, data, padAngle = 0, ifDonut = false, otherID }) => {
   const { HEIGHT: height, WIDTH: width, MARGIN: margin } = SVG;
-  const { xVal } = config;
+  const { xVal } = config.dataPlots[0];
 
   useEffect(() => {
-    renderPieChart(otherID, data, config, xVal, ifDonut, padAngle);
+    renderPieChart(otherID, data, config, xVal);
 
     return () => {
       d3.select(`#pieChart-${otherID}`).selectAll('*').remove();

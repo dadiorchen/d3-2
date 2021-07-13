@@ -3,6 +3,9 @@ import styles from '../../styles/GraphFrame.module.css';
 import { confirmAlert } from "react-confirm-alert";
 import "react-confirm-alert/src/react-confirm-alert.css";
 import { GRAPH_TYPE } from '../utility/constants';
+import { getCurrentFileName} from '../../src/redux/getters/getters';
+import { connect } from 'react-redux';
+
 import Legend from './legend';
 
 const GraphFrame = (props) => {
@@ -47,6 +50,7 @@ const GraphFrame = (props) => {
       }
     )
   }
+  //console.log('!!!!', props.fileName);
   return (
     <div className={styles.graphFrame} id={`frame-${id}`} onClick={handleClick}>
       <div className={styles.frameHeader}>
@@ -69,4 +73,10 @@ const GraphFrame = (props) => {
   );
 };
 
-export default GraphFrame;
+const mapStateToProps = (state) => {
+  return {
+    //fileName: getCurrentFileName(state.graph)
+  };
+};
+export default connect(mapStateToProps)(GraphFrame)
+//export default GraphFrame;

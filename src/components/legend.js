@@ -58,7 +58,6 @@ const Legend = ({ id, data, config }) => {
   }, [data, id, config, config.dataPlots]);
 
   return (
- 
     <div
       className={config.dataPlots.length > 1 ? styles.legend : styles.hidden}
       id={`legend-${id}`}
@@ -69,7 +68,6 @@ const Legend = ({ id, data, config }) => {
 };
 
 const mapStateToProps = (state, { id }) => {
-  console.log('state.graph', state.graph)
   return {
     config: getGraphConfig(state.graph, id),
     data: getGraphData(state.graph, id),

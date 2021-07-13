@@ -13,7 +13,7 @@ export default function Home() {
       </Head>
       <main className={styles.main}>
         <h1 className={styles.title}>
-        
+          <a href="#">WorkFusion Automation Cloud!</a>
         </h1>
 
         <div className={styles.grid}>
@@ -24,7 +24,7 @@ export default function Home() {
 
           <a href="/example-dashboard" className={styles.card}>
             <h2>Example Dashboard &rarr;</h2>
-           
+            <p>Get a gist of WorkFusion Model Visualization Dashboard.</p>
           </a>
 
           <a href="/playground" className={styles.card}>
