@@ -9,7 +9,8 @@ import { connect } from 'react-redux';
 import Legend from './legend';
 
 const GraphFrame = (props) => {
-  const { id, setSelectedGraph, selected, handleDelete, title, type } = props;
+  console.log("graph frame props:", props);
+  const { id, setSelectedGraph, selected, handleDelete, fileName, type } = props;
 
   useEffect(() => {
     if (selected) {
@@ -55,7 +56,7 @@ const GraphFrame = (props) => {
     <div className={styles.graphFrame} id={`frame-${id}`} onClick={handleClick}>
       <div className={styles.frameHeader}>
         <Legend id={id} />
-        <h2 className={styles.title}>{title || 'Chart Title'}</h2>
+        <h2 className={styles.title}>{fileName || 'Chart Title'}</h2>
         <button title='download' className={styles.deleteGraph} onClick={() => handleDownload({ id })}>
         ↓
         </button>
@@ -73,9 +74,10 @@ const GraphFrame = (props) => {
   );
 };
 
-const mapStateToProps = (state) => {
+const mapStateToProps = (state, ownProps) => {
+  console.log("ownProps:", ownProps);
   return {
-    //fileName: getCurrentFileName(state.graph)
+    fileName: getCurrentFileName(state.graph, ownProps.id)
   };
 };
 export default connect(mapStateToProps)(GraphFrame)
